@@ -1,54 +1,53 @@
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
 
+image = Image.new('RGB', (50, 50))
 
-def Fs(y):
-    return 4 * y + 6
-
-
-def Fd(x, y):
-    return 4 * x + 4 * y + 10
-
-
-def Bresenham_circle(rad):
-    x0, y0 = -rad, 0
-    F = 1 - 2 * rad
-
-    while True:
-        if (x0 == 0): break
-
-        image.putpixel((x0 + rad, y0 + rad), (255, 255, 255))
-        image.putpixel((x0 + rad, -y0 + rad), (255, 255, 255))
-        image.putpixel((-x0 + rad, y0 + rad), (255, 255, 255))
-        image.putpixel((-x0 + rad, -y0 + rad), (255, 255, 255))
+def Bresenham(x1, y1, x2, y2):
+    delta_x = abs(x2 - x1)
+    delta_y = abs(y2 - y1)
+    error = 0
+    diff = 1
 
 
-        image.putpixel((y0 + rad, x0 + rad), (255, 255, 255))
-        image.putpixel((-y0 + rad, x0 + rad), (255, 255, 255))
-        image.putpixel((y0 + rad, -x0 + rad), (255, 255, 255))
-        image.putpixel((-y0 + rad, -x0 + rad), (255, 255, 255))
+    if (x1 - x2 > 0):
+        x1, x2 = x2, x1
+        y1, y2 = y2, y1
 
 
-        if (abs(x0) <= abs(y0)): break
+    if (y1 - y2 > 0):
+        diff = -1
 
 
-        if (F < 0):
-            F += Fs(y0)
+    if (delta_x >= delta_y):
+        y_i = y1
+        for x in range(x1, x2 + 1):
+            image.putpixel((x, y_i), (255, 255, 255))
+            error = error + 2 * delta_y
+            if error >= delta_x:
+                y_i += diff
+                error -= 2 * delta_x
 
-        else:
-            x0 += 1
-            F += Fd(x0, y0)
-        y0 += 1
+    elif (delta_x < delta_y):
 
-    return
+        if (diff == -1):
+            x1, x2 = x2, x1
+            y1, y2 = y2, y1
+        x_i = x1
+        for y in range(y1, y2 + 1):
+            image.putpixel((x_i, y), (255, 255, 255))
+            error = error + 2 * delta_x
+            if error >= delta_y:
+                x_i += diff
+                error -= 2 * delta_y
 
 
-rad = int(input("r: "))
+x1 = int(input("x1: "))
+y1 = int(input("y1: "))
+x2 = int(input("x2: "))
+y2 = int(input("y2: "))
+Bresenham(x1, y1, x2, y2)
 
-image = Image.new('RGB', (2 * rad+1, 2 * rad+1))
-
-
-Bresenham_circle(rad)
 
 image = ImageOps.flip(image)
 plt.imshow(image)
